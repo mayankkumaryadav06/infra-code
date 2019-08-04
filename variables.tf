@@ -78,7 +78,7 @@ variable "frontend_instance_type" {
 }
 
 variable "frontend_version" {
-  default     = "20190803-2105"
+  default     = "20190803-2105-87fb7fc"
   description = "AMI Version for front-end"
 }
 
@@ -110,7 +110,7 @@ variable "newsfeed_app_port" {
 }
 
 variable "newsfeed_version" {
-  default     = "20190803-2105"
+  default     = "20190803-2105-87fb7fc"
   description = "AMI Version for news-feed"
 }
 
@@ -166,6 +166,6 @@ variable "quotesfeed_instance_type" {
 }
 
 variable "quotesfeed_version" {
-  default     = "20190803-2105"
+  default     = "20190803-2105-87fb7fc"
   description = "AMI Version for quotes-feed"
 }

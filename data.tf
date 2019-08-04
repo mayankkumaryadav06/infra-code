@@ -11,7 +11,7 @@ data "aws_ami" "frontend_aws_amis" {
 
   filter {
     name   = "tag:Version"
-    values = ["${var.frontend_version}-*"]
+    values = ["${var.frontend_version}"]
   }
 }
 
@@ -26,7 +26,7 @@ data "aws_ami" "newsfeed_aws_amis" {
 
   filter {
     name   = "tag:Version"
-    values = ["${var.newsfeed_version}-*"]
+    values = ["${var.newsfeed_version}"]
   }
 }
 
@@ -41,6 +41,6 @@ data "aws_ami" "quotesfeed_aws_amis" {
 
   filter {
     name   = "tag:Version"
-    values = ["${var.quotesfeed_version}-*"]
+    values = ["${var.quotesfeed_version}"]
   }
 }
