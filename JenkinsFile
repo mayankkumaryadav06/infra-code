@@ -12,31 +12,37 @@ pipeline {
     booleanParam(
       name: 'create_distribution',
       defaultValue: false,
-      description: 'Create Jar and Zip files for updated code in repo'
+      description: 'Create Jar and Zip files for updated code in repo.'
     )
 
     booleanParam(
       name: 'create_ami',
       defaultValue: false,
-      description: 'Create AMI for all servers'
+      description: 'Create AMI for all servers.'
     )
+
+    string(
+			name: 'Version',
+			defaultValue: "",
+			description: 'Enter AMI Version else latest created AMI Version will be used.'
+		)
 
 		booleanParam(
 			name: 'planInfrastructure',
 			defaultValue: true,
-			description: 'Check what is going to change in Infrastructure'
+			description: 'Check what is going to change in Infrastructure.'
 		)
 
 		booleanParam(
 			name: 'createInfrastructure',
 			defaultValue: false,
-			description: 'Create Infrastructure (You need to select plan checkbox for this. MANDATORY)'
+			description: 'Create Infrastructure (You need to select plan checkbox for this. MANDATORY).'
 		)
 
 		booleanParam(
 			name: 'destroyInfrastructure',
 			defaultValue: false,
-			description: 'Destroy Infrastructure'
+			description: 'Destroy Infrastructure.'
 		)
 	}
 
@@ -65,7 +71,7 @@ pipeline {
 				expression { return params.create_ami }
 			}
 			steps {
-			  sh "bin/create_baked_ami.sh"
+			  sh "bin/create_baked_ami.sh | tee -a /tmp/baked_ami.output"
 			}
 		}
 
@@ -73,10 +79,22 @@ pipeline {
       when {
         expression { return params.planInfrastructure }
       }
+      environment {
+				new_ami_version = sh (
+					script: "tail -1 /tmp/baked_ami.output | sed 's/ //g'",
+					returnStdout: true
+				).trim()
+			}
       steps {
-        sh "if [ ! -d infra-code/plan ]; then mkdir infra-code/plan; fi"
+        script {
+          sh "if [ ! -d infra-code/plan ]; then mkdir infra-code/plan; fi"
 
-        sh "cd infra-code && terraform init && terraform plan -out=plan/terraform_plan.out"
+          if ( "${params.Version}" == "") {
+            "${params.Version}" = "${env.new_ami_version}"
+          }
+
+          sh "cd infra-code && terraform init && terraform plan -out=plan/terraform_plan.out -var \"${params.Version}\" "
+        }
       }
     }
 
