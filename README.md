@@ -32,18 +32,18 @@ Some Infra Code to create Frontend Server, NewsFeed Server, Quotes Server
 1. In Jenkins Server, point the path of JenkinsFile present in Git. This will eliminate need of running commands manually on hosts
 
 ## Future Work
-[x] Create CI pipeline to run these commands in automated format.
+1. Create CI pipeline to run these commands in automated format. **DONE**
    - Can be on demand pipeline or can be invovked using gitlab webhook on each commit in master/developer.
    **Done as on demand pipeline**
 
-[x] Create CD pipeline to create/update Infrastructure.
+2. Create CD pipeline to create/update Infrastructure. **DONE**
 
-[x] Give options in Pipeline to override default variables value.
+3. Give options in Pipeline to override default variables value. **DONE**
 
-[] Optimize code in AMI creation. Currently taking ~20min to create AMIs for all servers.
+4. Optimize code in AMI creation. Currently taking ~20min to create AMIs for all servers.
 
-[x] Move all download automated (in **create_distribution.sh**). All pre-requisites can be avoided to be done manually
+5. Move all download automated (in **create_distribution.sh**). All pre-requisites can be avoided to be done manually. **DONE**
 
-[] Give option to make particular Server specific AMI
+6. Give option to make particular Server specific AMI
 
-[] Do Blue Green Deployment to achieve lowest possible downtime while production deployment
+7. Do Blue Green Deployment to achieve lowest possible downtime while production deployment
