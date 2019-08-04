@@ -16,6 +16,13 @@ if ! [ -x "$(command -v packer)" ]; then
   sudo yum install packer -y
 fi
 
+if ! [ -x "$(command -v terraform)" ]; then
+  echo 'Terraform not isntalled. Installing it first' >&2
+  cd /tmp/ ; wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_386.zip
+  sudo unzip terraform_0.11.14_linux_386.zip -d /usr/bin
+  sudo chmod +x /usr/bin/terraform
+fi
+
 
 sudo pip3 install -r requirements.txt
 #ansible-galaxy install -r requirements.yml -c -p playbooks/roles --force
