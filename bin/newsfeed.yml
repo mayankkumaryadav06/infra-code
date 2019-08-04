@@ -1,0 +1,16 @@
+---
+- name: Deploy Applications News Feed
+  become: yes
+  hosts: prod
+  user: ec2-user
+
+  vars:
+    env: prod
+    env_prefix: tp
+
+  roles:
+    - news-feed
+
+  tasks:
+    - name: Include shared tasks
+      include: './news-feed/tasks/main.yml'

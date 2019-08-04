@@ -1,0 +1,43 @@
+- name: Create Workdirectory
+  file:
+    path: /opt/quotesfeed
+    state: directory
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy newsfeed.jar
+  copy:
+    src: quotes-feed/templates/quotes.jar
+    dest: /opt/quotesfeed/quotesfeed.jar
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy Service file
+  copy:
+    src: quotes-feed/templates/startquotesfeed.service
+    dest: /lib/systemd/system/startquotesfeed.service
+    mode: '0744'
+
+- name: Copy Start file
+  copy:
+    src: quotes-feed/templates/startquotesfeed.sh
+    dest: /opt/quotesfeed/startquotesfeed.sh
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Install Python3
+  raw: yum -y install python3
+  become: yes
+
+- name: set environment variables for APP_PORT
+  lineinfile:
+    path: /etc/environment
+    line: export APP_PORT=8080
+    create: yes

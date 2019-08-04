@@ -1,0 +1,15 @@
+[Unit]
+Description=Quotesfeed Service
+Documentation=
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/newsquotesfeed
+Environment="APP_PORT=8080"
+ExecStart=/usr/bin/bash /opt/newsfeed/startquotesfeed.sh >/dev/null 2>&1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

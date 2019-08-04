@@ -1,0 +1,16 @@
+---
+- name: Deploy Applications Quotes Feed
+  become: yes
+  hosts: prod
+  user: ec2-user
+
+  vars:
+    env: prod
+    env_prefix: tp
+
+  roles:
+    - quotes-feed
+
+  tasks:
+    - name: Include shared tasks
+      include: './quotes-feed/tasks/main.yml'

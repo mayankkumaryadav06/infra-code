@@ -1,0 +1,43 @@
+- name: Create Workdirectory
+  file:
+    path: /opt/newsfeed
+    state: directory
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy newsfeed.jar
+  copy:
+    src: news-feed/templates/newsfeed.jar
+    dest: /opt/newsfeed
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy Service file
+  copy:
+    src: news-feed/templates/startnewsfeed.service
+    dest: /lib/systemd/system/startnewsfeed.service
+    mode: '0744'
+
+- name: Copy Start file
+  copy:
+    src: news-feed/templates/startnewsfeed.sh
+    dest: /opt/newsfeed/startnewsfeed.sh
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Install Python3
+  raw: yum -y install python3
+  become: yes
+
+- name: set environment variables for APP_PORT
+  lineinfile:
+    path: /etc/environment
+    line: export APP_PORT=8082
+    create: yes

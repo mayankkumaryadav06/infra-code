@@ -1,0 +1,15 @@
+[Unit]
+Description=Front End Service
+Documentation=
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/opt/frontend
+Environment="APP_PORT=8081"
+ExecStart=/usr/bin/bash /opt/frontend/startfrontend.sh >/dev/null 2>&1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

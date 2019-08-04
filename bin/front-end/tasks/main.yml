@@ -1,0 +1,107 @@
+# Making a generic work directory for all servers
+- name: Create Workdirectory
+  file:
+    path: /opt/frontend
+    state: directory
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy front-end.jar
+  copy:
+    src: front-end/templates/front-end.jar
+    dest: /opt/frontend
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy Jar file
+  copy:
+    src: front-end/templates/static.tgz
+    dest: /opt/frontend/static.tgz
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: Copy Service file
+  copy:
+    src: front-end/templates/startfrontend.service
+    dest: /lib/systemd/system/startfrontend.service
+    mode: '0744'
+
+- name: Copy Start file
+  copy:
+    src: front-end/templates/startfrontend.sh
+    dest: /opt/frontend/startfrontend.sh
+    mode: '0755'
+    owner: "ec2-user"
+    group: "ec2-user"
+    mode: '0755'
+
+- name: just force systemd to reread configs
+  systemd:
+    daemon_reload: yes
+
+- name: Copy serve.py
+  copy:
+    src: front-end/templates/serve.py
+    dest: /opt/frontend/serve.py
+    owner: "ec2-user"
+    group: "ec2-user"
+    mode: '0755'
+
+- name: Install Python3
+  raw: yum -y install python3
+  become: yes
+
+## Earlier I thought to start the service from ansible. But now keeping serve.py in systemd folder
+## So as when infrastructure is created, serve.py and jar files will be started as a service
+
+#- name: Start serve.py in nohup
+#  shell: nohup /opt/frontend/serve.py </dev/null >dev/null 2>&1 &
+
+- name: Extract static.tgz into /opt/frontend
+  unarchive:
+    src: /opt/frontend/static.tgz
+    dest: /opt/frontend
+    remote_src: yes
+    owner: "ec2-user"
+    group: "ec2-user"
+
+- name: set environment variables for STATIC_URL
+  lineinfile:
+    path: /etc/environment
+    line: export STATIC_URL="http://localhost:8000"
+    create: yes
+
+- name: lookup ssm parameter store in the current region
+  set_fact:
+     temp_secret: "{{ lookup('aws_ssm', 'newsfeed_token') }}"
+
+- name: set environment variables NEWSFEED_TOKEN
+  lineinfile:
+    path: /etc/environment
+    line: export NEWSFEED_TOKEN="{{ temp_secret }}"
+    create: yes
+
+# Assuming we have a hosted zone named as mayankkumar and we have set a CNAME for newsfeed
+- name: set environment variables NEWSFEED_SERVICE_URL
+  lineinfile:
+    path: /etc/environment
+    line: export NEWSFEED_SERVICE_URL="http://newsfeed.mayankkumar.com:8082"
+    create: yes
+
+- name: set environment variables QUOTES_SERVICE_URL
+  lineinfile:
+    path: /etc/environment
+    line: export QUOTES_SERVICE_URL="http://quotes.mayankkumar.com:8080"
+    create: yes
+
+- name: set environment variables APP_PORT
+  lineinfile:
+    path: /etc/environment
+    line: export APP_PORT=8081
+    create: yes
+
+#- name: start jar
+#  shell: cd /opt/frontend ; nohup java -jar front-end.jar </dev/null >dev/null 2>&1 &

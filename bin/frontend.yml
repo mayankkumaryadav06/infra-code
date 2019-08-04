@@ -1,0 +1,16 @@
+---
+- name: Deploy Applications Front End
+  become: yes
+  hosts: prod
+  user: jenkins
+
+  vars:
+    env: prod
+    env_prefix: tp
+
+  roles:
+    - front-end
+
+  tasks:
+    - name: Include shared tasks
+      include: './front-end/tasks/main.yml'

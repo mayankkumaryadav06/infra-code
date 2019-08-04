@@ -1,0 +1,86 @@
+{
+  "description": "Build Thoughtworks Server",
+  "min_packer_version": "1.3.3",
+  "variables": {
+    "id": "",
+    "timestamp": "",
+    "name_prefix": "APP",
+    "product_family": "ThoughtWorks",
+    "product": "ThoughtWorks App",
+    "version": "{{ env `VERSION` }}"
+  },
+  "provisioners": [
+    {
+      "type": "ansible",
+      "playbook_file": "newsfeed.yml",
+      "user": "ec2-user",
+      "host_alias": "prod"
+    }
+  ],
+  "builders": [
+    {
+      "name": "packer-Thoughtworks-{{ user `version` }}",
+      "type": "amazon-ebs",
+      "profile": "mayank-learning",
+      "region": "eu-west-2",
+      "instance_type": "t2.micro",
+      "ssh_username": "ec2-user",
+      "ssh_agent_auth": false,
+      "ssh_interface": "public_ip",
+      "ami_name": "Thoughtworks-newsfeed-{{ user `version` }}",
+      "associate_public_ip_address": true,
+      "encrypt_boot": true,
+      "insecure_skip_tls_verify": true,
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "root-device-type": "ebs",
+          "architecture": "x86_64",
+          "name": "thought-works-base-*"
+        },
+        "owners": [
+          "203032073505"
+        ],
+        "most_recent": "true"
+      },
+      "subnet_filter": {
+          "filters": {
+            "tag:Name": "thoughtworks"
+          },
+          "most_free": true
+      },
+      "tags": {
+        "Name": "Thoughtworks-{{ user `version` }}",
+        "Environment": "Prod",
+        "Product Family": "{{ user `product_family` }}",
+        "Product": "{{ user `product` }}",
+        "Persistence": "false",
+        "Terraform": "False",
+        "Packer": "True",
+        "Base_AMI_Name": "ami-0d8e27447ec2c8410",
+        "Version": "{{ user `version` }}"
+      },
+      "run_tags": {
+        "Name": "packer-{{ user `name_prefix` }}-{{ user `version` }}_{{ user `timestamp` }}",
+        "Product Family": "{{ user `product_family` }}",
+        "Product": "{{ user `product` }}",
+        "Persistence": "false",
+        "Terraform": "False",
+        "Packer": "True",
+        "Base_AMI_Name": "ami-0d8e27447ec2c8410",
+        "Version": "{{ user `version` }}"
+      },
+      "run_volume_tags": {
+        "Name": "packer-{{ user `name_prefix` }}-{{ user `version` }}_{{ user `timestamp` }}",
+        "Product Family": "{{ user `product_family` }}",
+        "Product": "{{ user `product` }}",
+        "Persistence": "false",
+        "Terraform": "False",
+        "Packer": "True",
+        "Git Commit": "{{ user `git_commit` }}",
+        "Base_AMI_Name": "ami-0d8e27447ec2c8410",
+        "Version": "{{ user `version` }}"
+      }
+    }
+  ]
+}
